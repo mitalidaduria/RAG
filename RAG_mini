@@ -1,0 +1,26 @@
+import chromadb
+
+# 1. Initialize the database client
+client = chromadb.Client()
+
+# 2. Create a new collection
+collection = client.create_collection(name="payment_policies")
+
+# 3. Add text documents (ChromaDB handles the embeddings automatically)
+collection.add(
+    documents=[
+        "Refunds must be requested within 30 days of purchase.",
+        "Subscription renewals occur automatically on the 1st of every month.",
+        "Late payments incur a 5% fee after a 3-day grace period."
+    ],
+    ids=["doc1", "doc2", "doc3"]
+)
+
+# 4. Query the database semantically
+results = collection.query(
+    query_texts=["When do I get charged for my subscription?"],
+    n_results=1 # Return the single best match
+)
+
+print(results['documents'])
+# Output will correctly favor 'doc2' even though the words 'charged' aren't an exact match.
